@@ -1,0 +1,289 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="animate-fade">
+    <header class="header-section">
+        <div>
+            <h1 class="page-title">Live Grid Analysis</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">Monitoring active sectors for real-time traffic anomalies.</p>
+        </div>
+        <div style="text-align: right;">
+            <div class="status-badge badge-primary">
+                <i class="fa-solid fa-satellite-dish" style="margin-right: 0.5rem;"></i>
+                Grid Active
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem;">
+                <span style="color: var(--success); font-weight: 600;">●</span> 0.4ms Grid Latency
+            </div>
+        </div>
+    </header>
+
+    <div class="stats-grid">
+        <div class="card stat-card">
+            <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Total Intercepts</div>
+            <div id="total-intercepts" class="stat-value" style="color: var(--primary);">{{ total_violations }}</div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+                <i class="fa-solid fa-arrow-trend-up" style="color: var(--success);"></i>
+                <span style="color: var(--success); font-weight: 600;">+12.4%</span>
+                <span style="color: var(--text-muted);">vs last hour</span>
+            </div>
+        </div>
+        <div class="card stat-card">
+            <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Mean Velocity</div>
+            <div id="avg-speed" class="stat-value" style="color: var(--accent);">{{ avg_speed }} <span style="font-size: 1.1rem; color: var(--text-muted); font-weight: 400;">km/h</span></div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+                <i class="fa-solid fa-gauge-high" style="color: var(--danger);"></i>
+                <span style="color: var(--danger); font-weight: 600;">High Intensity</span>
+                <span style="color: var(--text-muted);">detected</span>
+            </div>
+        </div>
+        <div class="card stat-card">
+            <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Active Nodes</div>
+            <div class="stat-value">01</div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+                <i class="fa-solid fa-circle-check" style="color: var(--primary);"></i>
+                <span style="color: var(--primary); font-weight: 600;">Nominal</span>
+                <span style="color: var(--text-muted);">operating status</span>
+            </div>
+        </div>
+        <div class="card stat-card">
+            <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">System Integrity</div>
+            <div class="stat-value" style="color: var(--success);">99.8%</div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+                <i class="fa-solid fa-microchip" style="color: var(--success);"></i>
+                <span style="color: var(--success); font-weight: 600;">Active</span>
+                <span style="color: var(--text-muted);">self-correction</span>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 2rem;">
+        <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.01);">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <i class="fa-solid fa-camera" style="color: var(--primary);"></i>
+                <h3 style="margin: 0; font-size: 1.25rem;">Live Grid Camera Feed</h3>
+            </div>
+            <div class="status-badge badge-primary">
+                REC <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--danger); margin-left: 5px; animation: blink 1s infinite alternate;"></span>
+            </div>
+        </div>
+        <div style="width: 100%; aspect-ratio: 16/9; background: #000; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+            <img src="{{ url_for('video_feed', camera_id='CAM_1') }}" alt="Live Camera Feed" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+        </div>
+        <div style="padding: 1rem 2rem; background: var(--glass-bg); border-top: 1px solid var(--glass-border); display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+            <select id="sourceType" class="btn" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: white;">
+                <option value="webcam">Webcam ID</option>
+                <option value="video">System Path</option>
+            </select>
+            <input type="text" id="sourceValue" value="0" style="flex: 1; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--glass-border); color: white; padding: 0.5rem 1rem; border-radius: 8px;" placeholder="Enter '0' or path (e.g., C:/video.mp4)">
+            <button class="btn btn-primary" onclick="setCameraSource()">
+                <i class="fa-solid fa-play"></i> Switch
+            </button>
+            <span style="color: var(--text-muted); padding: 0 0.5rem;">OR</span>
+            <input type="file" id="mediaUpload" accept="video/*,image/*" style="display: none;" onchange="uploadMediaFile()">
+            <button class="btn" style="background: rgba(255, 255, 255, 0.1); border: 1px solid var(--glass-border);" onclick="document.getElementById('mediaUpload').click()">
+                <i class="fa-solid fa-upload"></i> Upload File
+            </button>
+        </div>
+    </div>
+
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.01);">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i>
+                <h3 style="margin: 0; font-size: 1.25rem;">Recent Intercept Logs</h3>
+            </div>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <input type="text" id="plateSearch" placeholder="Search by Plate..." onkeyup="searchLogs()" style="background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white; padding: 0.5rem 1rem; border-radius: 8px; width: 250px;">
+                <a href="/api/export" class="btn btn-primary" style="text-decoration: none;">
+                    <i class="fa-solid fa-file-export"></i>
+                    Download Reports
+                </a>
+            </div>
+        </div>
+        <div class="table-container" style="padding: 0.5rem 1rem;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Classification</th>
+                        <th>Target</th>
+                        <th>Plate ID</th>
+                        <th>Velocity</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="logs-body">
+                    {% for v in violations %}
+                    <tr class="animate-row">
+                        <td style="font-family: 'Outfit', monospace; color: var(--primary); font-weight: 500;">{{ v.timestamp }}</td>
+                        <td>
+                            <span class="status-badge {% if 'Speeding' in v.violation_type or 'Danger' in v.violation_type %}badge-danger{% else %}badge-success{% endif %}">
+                                {{ v.violation_type }}
+                            </span>
+                        </td>
+                        <td style="text-transform: capitalize; font-weight: 500;">{{ v.vehicle_type }}</td>
+                        <td>
+                            <code style="background: var(--glass-bg); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--glass-border); color: var(--accent); font-weight: 700;">{{ v.plate_number }}</code>
+                        </td>
+                        <td style="font-weight: 600;">{{ v.speed }} <small style="color: var(--text-muted); font-weight: 400;">km/h</small></td>
+                        <td>
+                            <button class="btn" style="padding: 6px 12px; font-size: 0.75rem; background: var(--glass-bg); border-color: var(--glass-border);">
+                                Dispatch Unit
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function updateDashboard() {
+        try {
+            const response = await fetch('/api/data');
+            const data = await response.json();
+            
+            // Update stats
+            document.getElementById('total-intercepts').innerText = data.total_violations;
+            document.getElementById('avg-speed').innerHTML = `${data.avg_speed} <span style="font-size: 1.1rem; color: var(--text-muted); font-weight: 400;">km/h</span>`;
+            
+            // Update table
+            const tbody = document.getElementById('logs-body');
+            const existingRows = tbody.querySelectorAll('tr');
+            
+            // Only update if data has changed
+            let html = '';
+            data.violations.forEach(v => {
+                const badgeClass = (v.violation_type.includes('Speeding') || v.violation_type.includes('Danger')) ? 'badge-danger' : 'badge-success';
+                html += `
+                    <tr class="animate-row">
+                        <td style="font-family: 'Outfit', monospace; color: var(--primary); font-weight: 500;">${v.timestamp}</td>
+                        <td>
+                            <span class="status-badge ${badgeClass}">
+                                ${v.violation_type}
+                            </span>
+                        </td>
+                        <td style="text-transform: capitalize; font-weight: 500;">${v.vehicle_type}</td>
+                        <td>
+                            <code style="background: var(--glass-bg); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--glass-border); color: var(--accent); font-weight: 700;">${v.plate_number}</code>
+                        </td>
+                        <td style="font-weight: 600;">${v.speed} <small style="color: var(--text-muted); font-weight: 400;">km/h</small></td>
+                        <td>
+                            <button class="btn" style="padding: 6px 12px; font-size: 0.75rem; background: var(--glass-bg); border-color: var(--glass-border);">
+                                Dispatch Unit
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            // Basic check to avoid flickering if nothing new
+            if (tbody.innerHTML.trim() !== html.trim()) {
+                tbody.innerHTML = html;
+            }
+        } catch (error) {
+            console.error('Error fetching grid data:', error);
+        }
+    }
+
+    async function setCameraSource() {
+        const type = document.getElementById('sourceType').value;
+        const value = document.getElementById('sourceValue').value;
+        
+        try {
+            const response = await fetch('/api/set_source', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ type, value })
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                // Flash green
+                document.getElementById('sourceValue').style.borderColor = 'var(--success)';
+                setTimeout(() => document.getElementById('sourceValue').style.borderColor = 'var(--glass-border)', 2000);
+            } else {
+                alert("Error: " + result.error);
+            }
+        } catch (error) {
+            console.error('Error changing source:', error);
+            alert("Network error updating source.");
+        }
+    }
+
+    async function uploadMediaFile() {
+        const fileInput = document.getElementById('mediaUpload');
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        // Show loading state
+        document.body.style.cursor = 'wait';
+
+        try {
+            const response = await fetch('/api/upload_media', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                // Flash green
+                fileInput.parentElement.style.borderColor = 'var(--success)';
+                setTimeout(() => fileInput.parentElement.style.borderColor = 'var(--glass-border)', 2000);
+            } else {
+                alert("Upload Error: " + result.error);
+            }
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            alert("Network error uploading file.");
+        } finally {
+            document.body.style.cursor = 'default';
+            // Clear input so same file can be uploaded again if needed
+            fileInput.value = '';
+        }
+    }
+
+    function searchLogs() {
+        const input = document.getElementById('plateSearch');
+        const filter = input.value.toUpperCase();
+        const tbody = document.getElementById('logs-body');
+        const tr = tbody.getElementsByTagName('tr');
+
+        for (let i = 0; i < tr.length; i++) {
+            const td = tr[i].getElementsByTagName('td')[3]; // Plate column
+            if (td) {
+                const txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    // Refresh every 2 seconds
+    setInterval(updateDashboard, 2000);
+</script>
+
+<style>
+    @keyframes blink {
+        0% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+    @keyframes rowHighlight {
+        0% { background: rgba(var(--primary-rgb), 0.1); }
+        100% { background: transparent; }
+    }
+    .animate-row {
+        animation: rowHighlight 2s ease-out;
+    }
+</style>
+{% endblock %}

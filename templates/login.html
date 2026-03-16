@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.I.N | Authentication Gateway</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .login-wrapper {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 480px;
+            padding: 4rem 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, var(--primary), transparent, var(--accent), transparent);
+            animation: rotate 10s linear infinite;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .auth-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .auth-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-wrapper">
+        <div class="card login-card animate-fade">
+            <div class="auth-logo">
+                <div class="logo-text" style="font-size: 3.5rem;">S.I.N</div>
+                <div style="font-size: 0.8rem; color: var(--primary); font-weight: 700; letter-spacing: 0.2em; margin-top: -0.5rem;">SMART INTERCEPT</div>
+            </div>
+            
+            <h2 class="auth-title">Authentication Gateway</h2>
+            <p class="auth-subtitle">Personnel access only. Biometric sync active.</p>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% for message in messages %}
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: var(--danger); padding: 0.75rem; border-radius: 12px; font-size: 0.85rem; text-align: center; margin-bottom: 1.5rem;">
+                <i class="fa-solid fa-triangle-exclamation" style="margin-right: 0.5rem;"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label><i class="fa-solid fa-id-badge" style="margin-right: 0.5rem;"></i> Badge Identifier</label>
+                    <input type="text" name="username" class="form-control" required placeholder="Enter identifier">
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-key" style="margin-right: 0.5rem;"></i> Secure Passphrase</label>
+                    <input type="password" name="password" class="form-control" required placeholder="••••••••">
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1.125rem;">
+                        <i class="fa-solid fa-unlock-keyhole"></i>
+                        Decrypt & Access
+                    </button>
+                </div>
+            </form>
+
+            <div style="margin-top: 2.5rem; text-align: center; font-size: 0.9rem;">
+                <span style="color: var(--text-muted);">New personnel?</span>
+                <a href="/signup" style="color: var(--primary); text-decoration: none; font-weight: 600; margin-left: 0.5rem;">Initialize Account</a>
+            </div>
+
+            <div style="margin-top: 1.5rem; text-align: center; font-size: 0.75rem; color: var(--text-muted);">
+                <i class="fa-solid fa-lock" style="margin-right: 0.4rem;"></i>
+                256-bit GRID Encryption Active
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

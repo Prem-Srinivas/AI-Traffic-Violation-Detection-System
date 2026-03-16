@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="animate-fade">
+    <header style="margin-bottom: 3rem;">
+        <h1 style="margin: 0; font-size: 2.5rem;">System Administration</h1>
+        <p style="color: var(--text-dim);">Core grid configuration and personnel management.</p>
+    </header>
+
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+        <div class="card">
+            <h3 style="margin-top: 0;">Camera Nodes</h3>
+            <div
+                style="margin-bottom: 1rem; padding: 1rem; background: var(--glass); border-radius: 12px; border: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600;">CAM_1 (Main Entrance)</div>
+                        <div style="font-size: 0.8rem; color: var(--text-dim);">Internal IP: 192.168.1.104</div>
+                    </div>
+                    <div class="status-badge badge-success">ONLINE</div>
+                </div>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;">ADD LINK NODE</button>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-top: 0;">Personnel Roster</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Last Access</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>admin</td>
+                        <td><span class="status-badge"
+                                style="background: rgba(139, 92, 246, 0.1); color: var(--accent);">ADMIN</span></td>
+                        <td style="font-size: 0.8rem;">2026-03-07 16:20</td>
+                        <td><button class="btn" style="color: var(--text-dim);">EDIT</button></td>
+                    </tr>
+                    <tr>
+                        <td>officer</td>
+                        <td><span class="status-badge"
+                                style="background: rgba(59, 130, 246, 0.1); color: var(--primary);">POLICE</span></td>
+                        <td style="font-size: 0.8rem;">2026-03-07 09:12</td>
+                        <td><button class="btn" style="color: var(--text-dim);">EDIT</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="btn btn-primary" style="margin-top: 1.5rem;">AUTHORIZE NEW BADGE</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

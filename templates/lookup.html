@@ -1,0 +1,128 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="animate-fade" style="padding: 2rem;">
+    <header class="header-section" style="margin-bottom: 2rem;">
+        <div>
+            <h1 class="page-title">Identity Lookup System</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">Search national registry to dispatch explicit alerts.</p>
+        </div>
+    </header>
+
+    <div class="card" style="padding: 0; overflow: hidden; max-width: 800px; margin: 0 auto;">
+        <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.01);">
+            <div style="display: flex; gap: 1rem;">
+                <input type="text" id="plateInput" placeholder="Enter Registration Number (e.g. AP39CD5678)" style="flex: 1; padding: 1rem 1.5rem; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-size: 1.1rem; text-transform: uppercase;">
+                <button class="btn btn-primary" onclick="lookupPlate()" style="padding: 0 2rem; font-size: 1.1rem; border-radius: 12px;">
+                    <i class="fa-solid fa-magnifying-glass"></i> Search
+                </button>
+            </div>
+        </div>
+
+        <div id="resultsPane" style="padding: 2rem; display: none;">
+            <!-- Rendered by JS -->
+        </div>
+    </div>
+</div>
+
+<script>
+    async function lookupPlate() {
+        const plate = document.getElementById('plateInput').value.toUpperCase();
+        if(!plate) return;
+        
+        const pane = document.getElementById('resultsPane');
+        pane.style.display = 'block';
+        pane.innerHTML = `<div style="text-align: center; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><p>Querying Registry Database...</p></div>`;
+
+        try {
+            const response = await fetch('/api/lookup?plate=' + encodeURIComponent(plate));
+            const data = await response.json();
+
+            if (data.found) {
+                // Formatting results pane
+                pane.innerHTML = `
+                    <div style="background: rgba(var(--primary-rgb), 0.05); border: 1px solid var(--primary-glow); border-radius: 12px; padding: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem;">
+                            <div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em;">Target Identified</div>
+                                <h3 style="margin: 0; color: var(--primary); font-size: 1.5rem;">${data.name}</h3>
+                            </div>
+                            <div class="status-badge badge-success">Verified</div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; border: 1px solid var(--glass-border);">
+                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.25rem;">Phone Number</div>
+                                <div style="font-family: monospace; font-size: 1.1rem;">${data.phone}</div>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; border: 1px solid var(--glass-border);">
+                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.25rem;">Email Address</div>
+                                <div>${data.email}</div>
+                            </div>
+                        </div>
+
+                        <div style="border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
+                            <h4 style="margin: 0 0 1rem 0; color: var(--text-muted);">Dispatch Manual Alert</h4>
+                            
+                            <select id="manualViolation" class="btn" style="width: 100%; margin-bottom: 1rem; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white;">
+                                <option value="Overspeeding">Overspeeding (Exceeded limit by >15km/h)</option>
+                                <option value="No Helmet">No Helmet Tracking</option>
+                                <option value="Red Light">Red Light Violation</option>
+                                <option value="No Parking">Illegal Parking Zone</option>
+                            </select>
+
+                            <button class="btn" onclick="sendAlert('${plate}')" style="width: 100%; background: var(--danger); border-color: transparent;">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Send Alert (SMS & Email)
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                pane.innerHTML = `
+                    <div style="text-align: center; padding: 2rem 0; color: var(--text-muted);">
+                        <i class="fa-solid fa-ghost fa-3x" style="margin-bottom: 1rem; opacity: 0.3;"></i>
+                        <h4>Target Not Found in Registry</h4>
+                        <p>No verified identity matches registration ${plate}.</p>
+                    </div>
+                `;
+            }
+
+        } catch (e) {
+            pane.innerHTML = `<div style="color: var(--danger);">Network connectivity error. Retry query.</div>`;
+        }
+    }
+
+    async function sendAlert(plate) {
+        const vType = document.getElementById('manualViolation').value;
+        const btn = event.currentTarget;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Dispatching...`;
+        btn.style.opacity = '0.7';
+
+        try {
+            const response = await fetch('/api/alert_manual', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ plate: plate, violation_type: vType })
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                btn.innerHTML = `<i class="fa-solid fa-check"></i> Dispatched!`;
+                btn.style.background = 'var(--success)';
+                btn.style.color = 'black';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = 'var(--danger)';
+                    btn.style.color = 'white';
+                    btn.style.opacity = '1';
+                }, 3000);
+            }
+        } catch {
+            alert("Dispatch failed. Check logs.");
+            btn.innerHTML = originalText;
+            btn.style.opacity = '1';
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.I.N | Smart Intercept Network</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo-container">
+                <div class="logo-text">S.I.N</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500; letter-spacing: 0.1em; margin-top: 0.25rem;">SMART INTERCEPT</div>
+            </div>
+
+            <nav class="nav-links">
+                <a href="/" class="nav-item {% if request.path == '/' %}active{% endif %}">
+                    <i class="fa-solid fa-tower-broadcast"></i>
+                    <span>Live Monitoring</span>
+                </a>
+                <a href="/violations" class="nav-item {% if request.path == '/violations' %}active{% endif %}">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Violation Logs</span>
+                </a>
+                <a href="/lookup" class="nav-item {% if request.path == '/lookup' %}active{% endif %}">
+                    <i class="fa-solid fa-magnifying-glass-location"></i>
+                    <span>Plate Database</span>
+                </a>
+                {% if session.get('role') == 'admin' %}
+                <a href="/admin" class="nav-item {% if request.path == '/admin' %}active{% endif %}">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Core Systems</span>
+                </a>
+                {% endif %}
+            </nav>
+
+            <div class="user-profile">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;">Identity Verified</div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="width: 40px; height: 40px; background: var(--primary-glow); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary);">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.95rem;">{{ session.get('username') }}</div>
+                        <div style="font-size: 0.75rem; color: var(--primary); text-transform: uppercase; font-weight: 700;">{{ session.get('role') }}</div>
+                    </div>
+                </div>
+                <a href="/logout" class="nav-item" style="margin-top: 1.5rem; color: var(--danger);">
+                    <i class="fa-solid fa-power-off"></i>
+                    <span>Terminate Session</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+
+</html>

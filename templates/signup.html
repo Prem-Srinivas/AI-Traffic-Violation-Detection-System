@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.I.N | Initialize Personnel Account</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .login-wrapper {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 480px;
+            padding: 4rem 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, var(--primary), transparent, var(--accent), transparent);
+            animation: rotate 10s linear infinite;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .auth-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .auth-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.25rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-wrapper">
+        <div class="card login-card animate-fade">
+            <div class="auth-logo">
+                <div class="logo-text" style="font-size: 3.5rem;">S.I.N</div>
+                <div style="font-size: 0.8rem; color: var(--primary); font-weight: 700; letter-spacing: 0.2em; margin-top: -0.5rem;">SMART INTERCEPT</div>
+            </div>
+            
+            <h2 class="auth-title">Grid Registration</h2>
+            <p class="auth-subtitle">Initialize your personnel identifier and clearance.</p>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% for message in messages %}
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: var(--danger); padding: 0.75rem; border-radius: 12px; font-size: 0.85rem; text-align: center; margin-bottom: 1.5rem;">
+                <i class="fa-solid fa-triangle-exclamation" style="margin-right: 0.5rem;"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form action="/signup" method="POST">
+                <div class="form-group">
+                    <label><i class="fa-solid fa-id-badge" style="margin-right: 0.5rem;"></i> Choose Identifier</label>
+                    <input type="text" name="username" class="form-control" required placeholder="Custom identifier" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-key" style="margin-right: 0.5rem;"></i> Secure Passphrase</label>
+                    <input type="password" name="password" class="form-control" required placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-shield-halved" style="margin-right: 0.5rem;"></i> Clearance Level</label>
+                    <select name="role" class="form-control" required>
+                        <option value="police" selected>Police Officer</option>
+                        <option value="admin">Grid Administrator</option>
+                    </select>
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1.125rem;">
+                        <i class="fa-solid fa-user-plus"></i>
+                        Initialize Account
+                    </button>
+                </div>
+            </form>
+
+            <div style="margin-top: 2.5rem; text-align: center; font-size: 0.9rem;">
+                <a href="/login" style="color: var(--primary); text-decoration: none; font-weight: 600;">
+                    <i class="fa-solid fa-arrow-left" style="margin-right: 0.5rem;"></i>
+                    Back to Decrypt & Access
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

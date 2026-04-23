@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="page-header">
+    <div class="header-content">
+        <h1>Active Alerts</h1>
+        <p>Real-time notifications for critical traffic rule violations.</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Recent Alerts</h3>
+        <button class="action-btn" onclick="clearAllAlerts()" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+            <i class="fa-solid fa-trash-can"></i> Clear All
+        </button>
+    </div>
+    
+    <div class="alert-feed" id="alertContainer" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+        {% for a in alerts %}
+        <div class="alert-item" style="display: flex; align-items: flex-start; gap: 1rem; padding: 1rem; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; border-left: 4px solid var(--danger);">
+            <div style="font-size: 1.5rem; color: var(--danger); margin-top: 0.2rem;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div style="flex: 1;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <h4 style="margin: 0; color: #fff;">{{ a.violation_type }} Detected</h4>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-regular fa-clock"></i> {{ a.timestamp }}</span>
+                </div>
+                <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">
+                    Vehicle <strong style="color: var(--primary);">{{ a.plate_number }}</strong> detected at {{ a.camera }} with speed <strong>{{ a.speed }} km/h</strong>.
+                </p>
+                <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem;">
+                    <button style="padding: 0.25rem 0.75rem; background: var(--primary-glow); color: var(--primary); border: 1px solid var(--primary); border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Action Taken</button>
+                    <button style="padding: 0.25rem 0.75rem; background: transparent; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Dismiss</button>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div style="text-align: center; color: var(--text-muted); padding: 2rem;">No active alerts at the moment.</div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function clearAllAlerts() {
+    if(confirm("Are you sure you want to clear all notifications?")) {
+        document.getElementById('alertContainer').innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 2rem;">No active alerts at the moment.</div>';
+    }
+}
+</script>
+{% endblock %}

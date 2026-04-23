@@ -39,13 +39,16 @@ class TrafficDetector:
                     })
         return detections
 
-    def detect_helmets(self, rider_roi):
+    def detect_no_helmets(self, frame):
         # Specific helmet detection logic
-        results = self.helmet_model(rider_roi, verbose=False)
-        # Simplified: Check if 'helmet' class is present
-        # Assuming class 0 is helmet for this mock
-        has_helmet = any(int(box.cls[0]) == 0 for r in results for box in r.boxes)
-        return has_helmet
+        results = self.helmet_model(frame, verbose=False)
+        no_helmet_boxes = []
+        for r in results:
+            for box in r.boxes:
+                # Class 1 is 'NO-Hardhat' in the downloaded model
+                if int(box.cls[0]) == 1 and box.conf[0] > 0.4:
+                    no_helmet_boxes.append(list(map(int, box.xyxy[0])))
+        return no_helmet_boxes
 
     def detect_plates(self, vehicle_roi):
         # Specific plate detection logic

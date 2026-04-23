@@ -1,0 +1,228 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="animate-fade">
+    <header class="header-section">
+        <div>
+            <h1 class="page-title">Challan Engine</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">Financial enforcement and automated fine settlements across the network.</p>
+        </div>
+        <div style="text-align: right; display: flex; flex-direction: column; gap: 0.75rem; align-items: flex-end;">
+            <div class="status-badge badge-primary">
+                <i class="fa-solid fa-file-invoice-dollar" style="margin-right: 0.5rem;"></i>
+                Engine Active
+            </div>
+            <!-- Prominent Link to Public Payment Portal -->
+            <a href="/pay" target="_blank" class="btn btn-primary" style="text-decoration: none; box-shadow: 0 0 20px var(--primary-glow); border: 1px solid var(--primary); padding: 0.75rem 1.5rem; border-radius: 12px; font-weight: 700; font-family: 'Outfit';">
+                <i class="fa-solid fa-external-link-alt"></i> OPEN PUBLIC PAYMENT PORTAL
+            </a>
+        </div>
+    </header>
+
+    <!-- Top Statistical Overview -->
+    <div class="stats-grid">
+        <div class="card stat-card">
+            <div style="color: var(--text-muted); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">Recovered Capital</div>
+            <div class="stat-value" style="color: var(--success);">₹{{ total_paid }}</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">Verified settlements</div>
+        </div>
+        <div class="card stat-card">
+            <div style="color: var(--text-muted); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">Outstanding Fines</div>
+            <div class="stat-value" style="color: var(--danger);">₹{{ total_pending }}</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">Pending recovery</div>
+        </div>
+        <div class="card stat-card" style="grid-column: span 2; display: flex; align-items: center; justify-content: center; padding: 1.5rem;">
+            <canvas id="challanChart" style="max-height: 140px; width: 100%;"></canvas>
+        </div>
+    </div>
+
+    <!-- Challan Management Controller -->
+    <div class="card" style="padding: 0; overflow: hidden; margin-top: 2rem;">
+        <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.01);">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <i class="fa-solid fa-list-ol" style="color: var(--primary);"></i>
+                <h3 style="margin: 0; font-size: 1.25rem;">Enforcement Registry</h3>
+            </div>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <select id="statusFilter" class="btn" style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; outline: none; padding: 0.5rem 1rem; border-radius: 8px;" onchange="filterChallans()">
+                    <option value="">All Statuses</option>
+                    <option value="Paid">Paid</option>
+                    <option value="Unpaid">Unpaid</option>
+                    <option value="Pending">Pending</option>
+                </select>
+                <div style="position: relative;">
+                    <i class="fa-solid fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.8rem;"></i>
+                    <input type="text" id="challanSearch" placeholder="Search ID or Plate..." onkeyup="filterChallans()" style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; padding: 0.75rem 1rem 0.75rem 2.5rem; border-radius: 12px; width: 250px; outline: none; transition: 0.3s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--glass-border)'">
+                </div>
+            </div>
+        </div>
+        
+        <div class="table-container" style="padding: 0.5rem 1rem;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; padding: 1rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Reference ID</th>
+                        <th style="text-align: left; padding: 1rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Target Plate</th>
+                        <th style="text-align: left; padding: 1rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Classification</th>
+                        <th style="text-align: left; padding: 1rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Amount</th>
+                        <th style="text-align: left; padding: 1rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Temporal Index</th>
+                        <th style="text-align: left; padding: 1rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Status</th>
+                        <th style="text-align: left; padding: 1rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Operations</th>
+                    </tr>
+                </thead>
+                <tbody id="challan-body">
+                    {% for c in challans %}
+                    <tr class="challan-row animate-row" data-status="{{ c.status }}" style="border-top: 1px solid var(--glass-border);">
+                        <td style="padding: 1.5rem 1rem; font-weight: 700; color: var(--primary); font-family: 'Outfit';">#CH-{{ c.id }}</td>
+                        <td style="padding: 1.5rem 1rem;">
+                            <code style="background: var(--glass-bg); padding: 5px 10px; border-radius: 8px; border: 1px solid var(--glass-border); color: #fff; font-weight: 800; letter-spacing: 0.5px;">{{ c.plate }}</code>
+                        </td>
+                        <td style="padding: 1.5rem 1rem;">
+                            <div style="font-weight: 700; color: #fff;">{{ c.violation }}</div>
+                            <small style="color: var(--text-muted); text-transform: capitalize;">Vehicle: {{ c.vehicle }}</small>
+                        </td>
+                        <td style="padding: 1.5rem 1rem; font-weight: 800; font-size: 1.1rem; color: #fff;">₹{{ c.fine }}</td>
+                        <td style="padding: 1.5rem 1rem;">
+                            <div style="font-family: 'Outfit'; font-size: 0.9rem;">{{ c.date }}</div>
+                            <small style="color: var(--text-muted);"><i class="fa-solid fa-location-dot" style="font-size: 0.75rem;"></i> {{ c.location }}</small>
+                        </td>
+                        <td style="padding: 1.5rem 1rem;">
+                            {% if c.status == 'Paid' %}
+                                <span class="status-badge badge-success">Recovered</span>
+                            {% elif c.status == 'Pending' %}
+                                <span class="status-badge badge-primary">Processing</span>
+                            {% else %}
+                                <span class="status-badge badge-danger">Outstanding</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 1.5rem 1rem;">
+                            <div style="display: flex; gap: 0.4rem; align-items: center;">
+                                <!-- Mark Paid -->
+                                {% if c.status != 'Paid' %}
+                                <form action="/challans" method="POST" style="margin: 0;">
+                                    <input type="hidden" name="challan_id" value="{{ c.id }}">
+                                    <input type="hidden" name="status" value="Paid">
+                                    <button type="submit" class="btn" title="Authorize Settlement" style="padding: 8px; border: 1px solid var(--success); color: var(--success); background: rgba(0,255,163,0.05); cursor: pointer; border-radius: 8px;">
+                                        <i class="fa-solid fa-check-double"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                                
+                                <!-- PDF Download -->
+                                <a href="/download_challan/{{ c.id }}" class="btn" title="Download Document" style="padding: 8px; border: 1px solid var(--primary); color: var(--primary); background: rgba(0,242,255,0.05); text-decoration: none; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                </a>
+
+                                <!-- Dispatch Alert -->
+                                <button class="btn" title="Dispatch Notification" onclick="dispatchAlert('{{ c.id }}', '{{ c.plate }}', this)" style="padding: 8px; border: 1px solid var(--accent); color: var(--accent); background: rgba(139,92,246,0.05); cursor: pointer; border-radius: 8px;">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+
+                                <!-- Payment Redirect -->
+                                <a href="/pay?plate={{ c.plate }}" target="_blank" class="btn" title="User Payment Preview" style="padding: 8px; border: 1px solid var(--warning); color: #ffb800; background: rgba(255,184,0,0.05); text-decoration: none; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-credit-card"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if challans|length == 0 %}
+            <div style="text-align: center; padding: 5rem; color: var(--text-muted);">
+                <i class="fa-solid fa-shield-halved" style="font-size: 4rem; margin-bottom: 2rem; opacity: 0.2; display: block;"></i>
+                <p style="font-size: 1.2rem; font-weight: 500;">Clear Grid Control. No active challans found.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    async function dispatchAlert(challanId, plateId, btnNode) {
+        const originalIcon = btnNode.innerHTML;
+        btnNode.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+        
+        try {
+            const response = await fetch('/api/send_challan_alert', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ challan_id: challanId, plate: plateId })
+            });
+            const result = await response.json();
+            
+            if(result.success) {
+                alert("✓ ENFORCEMENT NOTIFICATION DISPATCHED\n\n" + result.message);
+                btnNode.style.boxShadow = '0 0 15px var(--success)';
+                btnNode.style.borderColor = 'var(--success)';
+            } else {
+                alert("Error: " + result.error);
+            }
+        } catch (error) {
+            alert("Network error during dispatch.");
+        } finally {
+            btnNode.innerHTML = originalIcon;
+        }
+    }
+
+    function filterChallans() {
+        const query = document.getElementById('challanSearch').value.toUpperCase();
+        const statusFilter = document.getElementById('statusFilter').value;
+        const rows = document.querySelectorAll('.challan-row');
+        
+        rows.forEach(row => {
+            const plateIdText = row.querySelector('td:nth-child(2)').textContent.toUpperCase();
+            const challanIdText = row.querySelector('td:nth-child(1)').textContent.toUpperCase();
+            const rowStatus = row.getAttribute('data-status');
+            
+            const matchSearch = plateIdText.includes(query) || challanIdText.includes(query);
+            
+            let statusToCompare = rowStatus;
+            if (rowStatus === "Paid") statusToCompare = "Recovered"; // Sync with badge text if needed, but attribute is likely "Paid"
+            
+            const matchStatus = statusFilter === "" || rowStatus === statusFilter;
+            
+            row.style.display = (matchSearch && matchStatus) ? "" : "none";
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const ctx = document.getElementById('challanChart').getContext('2d');
+        const totalPaid = {{ total_paid }};
+        const totalPending = {{ total_pending }};
+        
+        if(totalPaid === 0 && totalPending === 0) return;
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Recovered', 'Outstanding'],
+                datasets: [{
+                    data: [totalPaid, totalPending],
+                    backgroundColor: ['rgba(0, 255, 163, 0.7)', 'rgba(255, 77, 77, 0.7)'],
+                    borderColor: ['#00ffa3', '#ff4d4d'],
+                    borderWidth: 2,
+                    hoverOffset: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { 
+                            color: '#cbd5e1',
+                            font: { family: 'Outfit', size: 12, weight: '600' },
+                            padding: 20
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

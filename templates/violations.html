@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="animate-fade">
+    <header class="header-section">
+        <div>
+            <h1 class="page-title">Intercept Archive</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">Historic logs of every verified traffic anomaly across the grid.</p>
+        </div>
+        <div style="text-align: right;">
+            <a href="/api/export" class="btn btn-primary" style="text-decoration: none;">
+                <i class="fa-solid fa-file-export"></i> Cloud Export
+            </a>
+        </div>
+    </header>
+
+    <div class="card" style="padding: 0; overflow: hidden; margin-top: 2rem;">
+        <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.01);">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <i class="fa-solid fa-database" style="color: var(--primary);"></i>
+                <h3 style="margin: 0; font-size: 1.25rem;">Stored Violations</h3>
+            </div>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div style="position: relative;">
+                    <i class="fa-solid fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.85rem;"></i>
+                    <input type="text" id="violationSearch" placeholder="Filter by Plate or Type..." onkeyup="filterViolations()" style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; padding: 0.75rem 1rem 0.75rem 2.5rem; border-radius: 12px; width: 300px; outline: none; transition: border 0.3s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--glass-border)'">
+                </div>
+            </div>
+        </div>
+        
+        <div class="table-container" style="padding: 0.5rem 1rem;">
+            <table id="violationsTable">
+                <thead>
+                    <tr>
+                        <th>Time Index</th>
+                        <th>Classification</th>
+                        <th>Target Model</th>
+                        <th>Plate ID</th>
+                        <th>Vector Speed</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in violations %}
+                    <tr class="animate-row">
+                        <td style="font-family: 'Outfit', monospace; color: var(--primary); font-weight: 500;">{{ v.timestamp }}</td>
+                        <td>
+                            <span class="status-badge {% if 'Speeding' in v.violation_type or 'Danger' in v.violation_type or 'Helmet' in v.violation_type %}badge-danger{% else %}badge-success{% endif %}">
+                                {{ v.violation_type }}
+                            </span>
+                        </td>
+                        <td style="text-transform: capitalize; font-weight: 600;">{{ v.vehicle_type }}</td>
+                        <td>
+                            <code style="background: var(--glass-bg); padding: 5px 10px; border-radius: 8px; border: 1px solid var(--glass-border); color: var(--primary); font-weight: 800; letter-spacing: 0.5px;">{{ v.plate_number }}</code>
+                        </td>
+                        <td style="font-weight: 700;">{{ v.speed if v.speed > 0 else '--' }} <span style="color: var(--text-muted); font-size: 0.8rem;">KM/H</span></td>
+                        <td>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn" title="Examine Data" style="padding: 8px 12px; font-size: 0.8rem; background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.2); color: var(--primary);" onclick="alert('Raw detection metadata retrieved.')">
+                                    <i class="fa-solid fa-microscope"></i>
+                                </button>
+                                <button class="btn" title="Generate Invoice" style="padding: 8px 12px; font-size: 0.8rem; background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.2); color: var(--accent);" onclick="alert('Challan generation sequence initiated.')">
+                                    <i class="fa-solid fa-receipt"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 4rem;">
+                            <i class="fa-solid fa-server" style="font-size: 3rem; margin-bottom: 1.5rem; opacity: 0.3; display: block;"></i>
+                            Grid vault is currently empty. No intercepts found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterViolations() {
+    const input = document.getElementById("violationSearch");
+    const filter = input.value.toUpperCase();
+    const table = document.getElementById("violationsTable");
+    const tr = table.getElementsByTagName("tr");
+    
+    for (let i = 1; i < tr.length; i++) {
+        let found = false;
+        const tds = tr[i].getElementsByTagName("td");
+        for (let j = 0; j < tds.length; j++) {
+            if (tds[j]) {
+                const txt = tds[j].textContent || tds[j].innerText;
+                if (txt.toUpperCase().indexOf(filter) > -1) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+        tr[i].style.display = found ? "" : "none";
+    }
+}
+</script>
+{% endblock %}

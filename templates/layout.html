@@ -14,7 +14,9 @@
         <aside class="sidebar">
             <div class="logo-container">
                 <div class="logo-text">S.I.N</div>
-                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500; letter-spacing: 0.1em; margin-top: 0.25rem;">SMART INTERCEPT</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; letter-spacing: 0.2em; margin-top: 0.5rem; text-transform: uppercase;">
+                    Smart Intercept
+                </div>
             </div>
 
             <nav class="nav-links">
@@ -26,30 +28,46 @@
                     <i class="fa-solid fa-list-check"></i>
                     <span>Violation Logs</span>
                 </a>
+                <a href="/challans" class="nav-item {% if request.path == '/challans' %}active{% endif %}">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Challan Engine</span>
+                </a>
                 <a href="/lookup" class="nav-item {% if request.path == '/lookup' %}active{% endif %}">
                     <i class="fa-solid fa-magnifying-glass-location"></i>
                     <span>Plate Database</span>
                 </a>
+                <a href="/alerts" class="nav-item {% if request.path == '/alerts' %}active{% endif %}">
+                    <i class="fa-solid fa-bell"></i>
+                    <span>Alert Notifications</span>
+                </a>
+                <a href="/reports" class="nav-item {% if request.path == '/reports' %}active{% endif %}">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>System Analytics</span>
+                </a>
+                <a href="/settings" class="nav-item {% if request.path == '/settings' %}active{% endif %}">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Configuration</span>
+                </a>
                 {% if session.get('role') == 'admin' %}
                 <a href="/admin" class="nav-item {% if request.path == '/admin' %}active{% endif %}">
                     <i class="fa-solid fa-shield-halved"></i>
-                    <span>Core Systems</span>
+                    <span>Core Command</span>
                 </a>
                 {% endif %}
             </nav>
 
             <div class="user-profile">
-                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;">Identity Verified</div>
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <div style="width: 40px; height: 40px; background: var(--primary-glow); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary);">
-                        <i class="fa-solid fa-user-shield"></i>
+                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1rem; font-weight: 800;">Identity Verified</div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 48px; height: 48px; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--primary); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--primary); box-shadow: 0 0 15px var(--primary-glow);">
+                        <i class="fa-solid fa-user-shield" style="font-size: 1.25rem;"></i>
                     </div>
                     <div>
-                        <div style="font-weight: 600; font-size: 0.95rem;">{{ session.get('username') }}</div>
-                        <div style="font-size: 0.75rem; color: var(--primary); text-transform: uppercase; font-weight: 700;">{{ session.get('role') }}</div>
+                        <div style="font-weight: 700; font-size: 1rem; color: #fff;">{{ session.get('username') }}</div>
+                        <div style="font-size: 0.75rem; color: var(--primary); text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">{{ session.get('role') }}</div>
                     </div>
                 </div>
-                <a href="/logout" class="nav-item" style="margin-top: 1.5rem; color: var(--danger);">
+                <a href="/logout" class="nav-item" style="margin-top: 2rem; color: var(--danger); background: rgba(255, 77, 77, 0.05); border: 1px solid rgba(255, 77, 77, 0.1);">
                     <i class="fa-solid fa-power-off"></i>
                     <span>Terminate Session</span>
                 </a>

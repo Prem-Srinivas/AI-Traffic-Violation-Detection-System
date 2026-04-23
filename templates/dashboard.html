@@ -66,8 +66,30 @@
                 REC <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--danger); margin-left: 5px; animation: blink 1s infinite alternate;"></span>
             </div>
         </div>
-        <div style="width: 100%; aspect-ratio: 16/9; background: #000; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;">
-            <img src="{{ url_for('video_feed', camera_id='CAM_1') }}" alt="Live Camera Feed" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+        <div style="width: 100%; aspect-ratio: 16/9; background: #000; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; cursor: pointer;" onclick="togglePlay()">
+            <img src="{{ url_for('video_feed', camera_id='CAM_1') }}" id="video-feed" alt="Live Camera Feed" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            <!-- State Overlay -->
+            <div id="video-overlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 5rem; opacity: 0; pointer-events: none; transition: all 0.4s; background: rgba(0,0,0,0.3); width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i id="overlay-icon" class="fa-solid fa-play"></i>
+            </div>
+        </div>
+        <!-- Playback Controls -->
+        <div style="padding: 0.75rem 2rem; background: rgba(0,0,0,0.4); display: flex; gap: 1.5rem; justify-content: center; border-top: 1px solid var(--glass-border);">
+            <button class="btn btn-playback" onclick="controlVideo('backward')" title="Backward 5s">
+                <i class="fa-solid fa-backward"></i>
+            </button>
+            <button class="btn btn-playback" onclick="controlVideo('pause')" id="pauseBtn" title="Pause">
+                <i class="fa-solid fa-pause"></i>
+            </button>
+            <button class="btn btn-playback" onclick="controlVideo('play')" id="playBtn" title="Play">
+                <i class="fa-solid fa-play"></i>
+            </button>
+            <button class="btn btn-playback" onclick="controlVideo('forward')" title="Forward 5s">
+                <i class="fa-solid fa-forward"></i>
+            </button>
+            <button class="btn btn-playback" onclick="controlVideo('restart')" title="Restart">
+                <i class="fa-solid fa-rotate-left"></i>
+            </button>
         </div>
         <div style="padding: 1rem 2rem; background: var(--glass-bg); border-top: 1px solid var(--glass-border); display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
             <select id="sourceType" class="btn" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: white;">
@@ -269,6 +291,52 @@
         }
     }
 
+    let isPaused = false;
+
+    function togglePlay() {
+        if (isPaused) controlVideo('play');
+        else controlVideo('pause');
+    }
+
+    async function controlVideo(action) {
+        try {
+            await fetch('/api/video_control', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action, camera_id: 'CAM_1' })
+            });
+            
+            // Animation overlay
+            const overlay = document.getElementById('video-overlay');
+            const icon = document.getElementById('overlay-icon');
+            
+            if (action === 'pause') {
+                isPaused = true;
+                icon.className = 'fa-solid fa-pause';
+                document.getElementById('pauseBtn').style.color = 'var(--danger)';
+                document.getElementById('playBtn').style.color = 'white';
+            } else if (action === 'play') {
+                isPaused = false;
+                icon.className = 'fa-solid fa-play';
+                document.getElementById('playBtn').style.color = 'var(--success)';
+                document.getElementById('pauseBtn').style.color = 'white';
+            } else {
+                icon.className = 'fa-solid fa-' + (action === 'restart' ? 'rotate-left' : action);
+            }
+
+            // Trigger animation
+            overlay.style.opacity = '1';
+            overlay.style.transform = 'translate(-50%, -50%) scale(1.1)';
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                overlay.style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 500);
+
+        } catch (error) {
+            console.error('Error controlling video:', error);
+        }
+    }
+
     // Refresh every 2 seconds
     setInterval(updateDashboard, 2000);
 </script>
@@ -284,6 +352,25 @@
     }
     .animate-row {
         animation: rowHighlight 2s ease-out;
+    }
+    .btn-playback {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-playback:hover {
+        color: var(--primary);
+        transform: scale(1.2);
+    }
+    .btn-playback:active {
+        transform: scale(0.9);
     }
 </style>
 {% endblock %}

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment Portal | S.I.N Network</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg-deep: #050816;
+      --primary: #00f2ff;
+      --primary-glow: rgba(0, 242, 255, 0.3);
+      --accent: #8b5cf6;
+      --success: #00ffa3;
+      --danger: #ff4d4d;
+      --text-head: #ffffff;
+      --text-body: #cbd5e1;
+      --text-muted: #64748b;
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-blur: blur(20px);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Background Orbs */
+    body::before {
+      content: ''; position: fixed; width: 500px; height: 500px; border-radius: 50%;
+      background: var(--primary); top: -200px; right: -200px; filter: blur(120px);
+      opacity: 0.1; z-index: -1;
+    }
+
+    header {
+      background: rgba(10, 15, 43, 0.8);
+      backdrop-filter: var(--glass-blur);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 1.5rem 0;
+      position: sticky; top: 0; z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1200px; margin: auto; padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .logo { display: flex; align-items: center; gap: 1rem; text-decoration: none; }
+    .logo-text h1 { 
+      color: #fff; font-size: 1.75rem; font-family: 'Outfit'; font-weight: 900; 
+      background: linear-gradient(to right, var(--primary), #fff);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .hero {
+      padding: 6rem 2rem 4rem; text-align: center;
+    }
+    .hero h2 { 
+      font-family: 'Outfit'; font-size: 3.5rem; font-weight: 900; color: #fff; 
+      letter-spacing: -2px; line-height: 1.1; margin-bottom: 1.5rem;
+    }
+    .hero p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: auto; }
+
+    .search-wrap { max-width: 700px; margin: -2rem auto 0; padding: 0 2rem; position: relative; z-index: 10; }
+    .search-card {
+      background: rgba(15, 23, 42, 0.6); backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border); border-radius: 32px;
+      padding: 3rem; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    }
+
+    .search-row { display: flex; gap: 1rem; }
+    .search-row input {
+      flex: 1; padding: 1.25rem 1.5rem; background: rgba(0,0,0,0.3);
+      border: 1px solid var(--glass-border); border-radius: 16px;
+      color: #fff; font-size: 1.1rem; text-transform: uppercase; outline: none;
+      transition: border 0.3s;
+    }
+    .search-row input:focus { border-color: var(--primary); box-shadow: 0 0 20px var(--primary-glow); }
+
+    .btn-search {
+      padding: 1rem 2.5rem; background: var(--primary); color: #000;
+      border: none; border-radius: 16px; font-weight: 800; font-family: 'Outfit';
+      cursor: pointer; transition: 0.3s; text-transform: uppercase;
+    }
+    .btn-search:hover { transform: translateY(-2px); box-shadow: 0 10px 30px var(--primary-glow); }
+
+    .main { max-width: 1200px; margin: 4rem auto; padding: 0 2rem 6rem; }
+
+    .card {
+      background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border); border-radius: 32px;
+      padding: 3rem; margin-bottom: 2rem; box-shadow: inset 0 0 20px rgba(255,255,255,0.02);
+    }
+
+    .driver-info { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
+    .driver-avatar {
+      width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 24px; display: flex; align-items: center; justify-content: center;
+      color: #000; font-size: 2rem; font-weight: 900; font-family: 'Outfit';
+    }
+
+    .stat-box { text-align: center; }
+    .stat-box .val { font-size: 2rem; font-weight: 800; font-family: 'Outfit'; }
+    .stat-box .lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    table { width: 100%; border-collapse: separate; border-spacing: 0 1rem; }
+    th { padding: 1.5rem; text-align: left; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
+    td { padding: 1.75rem 1.5rem; background: rgba(255, 255, 255, 0.02); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); }
+    td:first-child { border-left: 1px solid var(--glass-border); border-radius: 20px 0 0 20px; }
+    td:last-child { border-right: 1px solid var(--glass-border); border-radius: 0 20px 20px 0; }
+
+    .badge { padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+    .badge-paid { background: rgba(0, 255, 163, 0.1); color: var(--success); border: 1px solid rgba(0, 255, 163, 0.2); }
+    .badge-unpaid { background: rgba(255, 77, 77, 0.1); color: var(--danger); border: 1px solid rgba(255, 77, 77, 0.2); }
+
+    .btn-pay {
+      padding: 10px 20px; background: var(--primary); color: #000;
+      border: none; border-radius: 12px; font-weight: 800; font-family: 'Outfit';
+      cursor: pointer; transition: 0.3s;
+    }
+    .btn-pay:hover { transform: translateY(-2px); box-shadow: 0 10px 20px var(--primary-glow); }
+
+    /* Modal Styling */
+    .modal {
+      background: #0a0f2b; border: 1px solid var(--glass-border);
+      border-radius: 32px; box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+      max-width: 500px; width: 100%; color: #fff; overflow: hidden;
+    }
+    .modal-header { padding: 2rem; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #000; }
+    .modal-body { padding: 2.5rem; }
+
+    .pay-method {
+      border: 1px solid var(--glass-border); border-radius: 16px; padding: 1.5rem 1rem;
+      background: rgba(255,255,255,0.03); transition: 0.3s; cursor: pointer;
+    }
+    .pay-method.selected { border-color: var(--primary); background: rgba(0, 242, 255, 0.05); color: var(--primary); }
+
+    .spinner-ring {
+      width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.1);
+      border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    footer { padding: 3rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="/pay">
+      <div class="logo-text"><h1>S.I.N PORTAL</h1></div>
+    </a>
+    <a href="/login" style="color: var(--primary); text-decoration: none; font-weight: 700; font-size: 0.9rem;">
+      ADMIN ACCESS <i class="fa-solid fa-lock"></i>
+    </a>
+  </div>
+</header>
+
+<div class="hero">
+  <h2>Settle All Records</h2>
+  <p>Securely clear your traffic violations via the Smart Intercept Network database.</p>
+</div>
+
+<div class="search-wrap">
+  <div class="search-card">
+    <div class="search-row">
+      <input type="text" id="plateInput" placeholder="ENTER PLATE NUMBER ID" maxlength="12" />
+      <button class="btn-search" onclick="searchPlate()">SEARCH</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div id="spinner" style="display:none; text-align:center;">
+    <div class="spinner-ring" style="margin:auto;"></div>
+    <p style="margin-top:20px; color:var(--text-muted);">Syncing with Central Registry...</p>
+  </div>
+
+  <div id="notFound" style="display:none; text-align:center; padding:4rem;">
+    <i class="fa-solid fa-shield-slash" style="font-size:4rem; color:var(--text-muted); margin-bottom:2rem; opacity:0.3;"></i>
+    <h3 style="font-family:'Outfit'; font-size:1.5rem; color:#fff;">No Records Found</h3>
+    <p style="color:var(--text-muted); margin-top:1rem;">The system has no pending anomalies for this vehicle ID.</p>
+  </div>
+
+  <div class="card" id="driverCard" style="display:none;">
+    <div class="driver-info">
+      <div class="driver-avatar" id="driverInitial">?</div>
+      <div class="driver-details">
+        <h3 id="driverName" style="font-family:'Outfit'; font-size:1.75rem; color:#fff;">-</h3>
+        <p id="driverMeta">-</p>
+      </div>
+      <div style="margin-left:auto; display:flex; gap:3rem;">
+        <div class="stat-box">
+          <div class="val" style="color:var(--danger);" id="statUnpaid">0</div>
+          <div class="lbl">Pending</div>
+        </div>
+        <div class="stat-box">
+          <div class="val" style="color:var(--primary);" id="statDue">₹0</div>
+          <div class="lbl">Total Due</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="challansWrap" style="display:none;">
+    <div class="card" style="padding:0; overflow:hidden;">
+        <div style="padding:1.5rem 2.5rem; border-bottom:1px solid var(--glass-border); background:rgba(255,255,255,0.01);">
+            <h3 style="font-family:'Outfit'; font-size:1.25rem; color:#fff;">Violation Details</h3>
+        </div>
+        <div style="padding:1.5rem 2.5rem;">
+            <table id="challansTable">
+                <thead>
+                    <tr>
+                        <th>Archive ID</th>
+                        <th>Classification</th>
+                        <th>Timestamp</th>
+                        <th>Amount</th>
+                        <th>Download</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="challansBody"></tbody>
+            </table>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div id="payModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:1000; align-items:center; justify-content:center; padding:2rem;">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 style="font-family:'Outfit'; font-weight:900;">CLEAR RECORD</h3>
+      <p style="font-size:0.85rem; font-weight:700;">Secure Transaction Hub</p>
+    </div>
+    <div class="modal-body">
+      <div style="background:rgba(255,255,255,0.03); border-radius:24px; padding:2rem; margin-bottom:2rem; text-align:center;">
+        <p style="color:var(--text-muted); font-size:0.9rem;">Total Penalty Value</p>
+        <div style="font-size:3.5rem; font-weight:900; font-family:'Outfit'; color:var(--primary);" id="modalAmount">₹0</div>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.5rem;" id="modalChallanId">#CH-0000</p>
+      </div>
+
+      <div class="payment-methods" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-bottom:2rem;">
+        <div class="pay-method selected" onclick="selectMethod(this,'UPI')">
+            <i class="fa-solid fa-mobile-screen" style="font-size:1.5rem; display:block; margin-bottom:0.5rem;"></i> UPI
+        </div>
+        <div class="pay-method" onclick="selectMethod(this,'Card')">
+            <i class="fa-solid fa-credit-card" style="font-size:1.5rem; display:block; margin-bottom:0.5rem;"></i> CARD
+        </div>
+        <div class="pay-method" onclick="selectMethod(this,'Net Banking')">
+            <i class="fa-solid fa-building-columns" style="font-size:1.5rem; display:block; margin-bottom:0.5rem;"></i> BANK
+        </div>
+      </div>
+
+      <button class="btn-search" id="confirmPayBtn" style="width:100%; padding:1.25rem; font-size:1.1rem;" onclick="confirmPayment()">
+        AUTHORIZE PAYMENT <i class="fa-solid fa-arrow-right"></i>
+      </button>
+      <button style="width:100%; margin-top:1rem; background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-weight:600;" onclick="closeModal()">ABORT TRANSACTION</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div id="successModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center;">
+  <div style="text-align:center; max-width:400px; padding:3rem; background:#0a0f2b; border:1px solid var(--success); border-radius:32px; box-shadow:0 0 50px rgba(0,255,163,0.2);">
+    <div style="width:80px; height:80px; background:var(--success); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#000; font-size:2.5rem; margin:0 auto 1.5rem;">
+        <i class="fa-solid fa-check"></i>
+    </div>
+    <h3 style="font-family:'Outfit'; font-size:1.75rem; color:#fff; margin-bottom:1rem;">PAYMENT VERIFIED</h3>
+    <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:2rem;">Digital receipt has been dispatched to your encrypted registry.</p>
+    <div style="background:rgba(0,255,163,0.05); color:var(--success); padding:1rem; border-radius:12px; font-family:monospace; font-weight:700; border:1px dashed var(--success); margin-bottom:2rem;" id="txnId">
+        TXN: S-IN-XXXXXXXX
+    </div>
+    <button class="btn-search" style="width:100%; border-radius:12px;" onclick="closeSuccess()">CLOSE SECTION</button>
+  </div>
+</div>
+
+<footer>
+  &copy; 2026 S.I.N | SMART INTERCEPT NETWORK &nbsp;●&nbsp; CORE GRID VERIFIED
+</footer>
+
+<script>
+  let currentPlate   = '';
+  let currentChallan = null;
+  let selectedMethod = 'UPI';
+
+  function searchPlate() {
+    const plate = document.getElementById('plateInput').value.trim().toUpperCase();
+    if (!plate) return;
+    currentPlate = plate;
+
+    document.getElementById('driverCard').style.display = 'none';
+    document.getElementById('challansWrap').style.display = 'none';
+    document.getElementById('notFound').style.display = 'none';
+    document.getElementById('spinner').style.display = 'block';
+
+    fetch(`/api/pay/lookup?plate=${encodeURIComponent(plate)}`)
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('spinner').style.display = 'none';
+        if (!data.found || data.challans.length === 0) {
+            document.getElementById('notFound').style.display = 'block';
+            return;
+        }
+        renderDriver(data);
+        renderChallans(data.challans);
+      })
+      .catch(() => {
+        document.getElementById('spinner').style.display = 'none';
+        document.getElementById('notFound').style.display = 'block';
+      });
+  }
+
+  function renderDriver(data) {
+    const name = data.driver_name || 'Vehicle Owner';
+    document.getElementById('driverInitial').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('driverName').textContent    = name;
+    document.getElementById('driverMeta').textContent    = `REGISTRY ID: ${currentPlate} | CONTACT: ${data.driver_phone || 'N/A'}`;
+
+    const unpaid = data.challans.filter(c => c.status !== 'Paid').length;
+    const due    = data.challans.filter(c => c.status !== 'Paid').reduce((s,c)=> s+c.fine, 0);
+
+    document.getElementById('statUnpaid').textContent = unpaid;
+    document.getElementById('statDue').textContent    = `₹${due.toLocaleString()}`;
+    document.getElementById('driverCard').style.display = 'block';
+  }
+
+  function renderChallans(challans) {
+    const tbody = document.getElementById('challansBody');
+    tbody.innerHTML = challans.map(c => `
+      <tr>
+        <td style="font-family:'Outfit'; color:var(--primary); font-weight:700;">#CH-${c.id}</td>
+        <td>${c.violation}</td>
+        <td style="font-size:0.85rem; color:var(--text-muted);">${c.date ? c.date.substring(0,16) : '-'}</td>
+        <td style="font-weight:900; font-size:1.1rem; color:#fff;">₹${(c.fine||0).toLocaleString()}</td>
+        <td>
+          <a href="/download_challan/${c.id}" style="color:var(--primary); font-size:1.25rem;">
+            <i class="fa-solid fa-file-pdf"></i>
+          </a>
+        </td>
+        <td><span class="badge badge-${(c.status||'unpaid').toLowerCase()}">${c.status}</span></td>
+        <td>
+          ${c.status === 'Paid'
+            ? '<i class="fa-solid fa-circle-check" style="color:var(--success); font-size:1.5rem;"></i>'
+            : `<button class="btn-pay" onclick="openPayModal(${c.id},'${c.violation}',${c.fine})">PAY NOW</button>`
+          }
+        </td>
+      </tr>`).join('');
+    document.getElementById('challansWrap').style.display = 'block';
+  }
+
+  function openPayModal(challanId, violation, fine) {
+    currentChallan = challanId;
+    document.getElementById('modalChallanId').textContent = '#CH-' + challanId;
+    document.getElementById('modalAmount').textContent    = '₹' + fine.toLocaleString();
+    document.getElementById('payModal').style.display = 'flex';
+  }
+
+  function closeModal() { document.getElementById('payModal').style.display = 'none'; }
+
+  function selectMethod(el, method) {
+    selectedMethod = method;
+    document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function confirmPayment() {
+    const btn = document.getElementById('confirmPayBtn');
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> SYNCING...';
+    btn.disabled = true;
+
+    fetch('/api/pay/challan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        challan_id: currentChallan,
+        plate: currentPlate,
+        payment_method: selectedMethod
+      })
+    })
+    .then(r => r.json())
+    .then(data => {
+      btn.innerHTML = 'AUTHORIZE PAYMENT <i class="fa-solid fa-arrow-right"></i>'; btn.disabled = false;
+      closeModal();
+      if (data.success) {
+        document.getElementById('txnId').textContent = 'TXN: ' + data.transaction_id;
+        document.getElementById('successModal').style.display = 'flex';
+        searchPlate();
+      } else {
+        alert('Payment failed: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(() => { btn.innerHTML = 'AUTHORIZE PAYMENT <i class="fa-solid fa-arrow-right"></i>'; btn.disabled = false; });
+  }
+
+  function closeSuccess() { document.getElementById('successModal').style.display = 'none'; }
+
+  window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const plate = urlParams.get('plate');
+    if (plate) {
+      document.getElementById('plateInput').value = plate;
+      searchPlate();
+    }
+  };
+</script>
+</body>
+</html>

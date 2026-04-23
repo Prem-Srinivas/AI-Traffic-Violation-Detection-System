@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+traffic_violations.db
+alerts_log.json
+uploads/
+*.pt
+*.log
+.DS_Store

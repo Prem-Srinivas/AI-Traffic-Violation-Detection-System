@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="animate-fade">
+    <header class="header-section">
+        <div>
+            <h1 class="page-title">Network Configuration</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">Calibrate detection sensitivity, enforcement protocols, and notification logic.</p>
+        </div>
+        <div style="text-align: right;">
+            <div class="status-badge" style="background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2);">
+                <i class="fa-solid fa-check-shield" style="margin-right:0.5rem;"></i> Sync Validated
+            </div>
+        </div>
+    </header>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+        <!-- Logic Parameters -->
+        <div class="card" style="padding: 2.5rem;">
+            <h3 style="font-family:'Outfit'; margin-bottom: 2rem; border-left: 3px solid var(--primary); padding-left: 1rem;">Heuristic Thresholds</h3>
+            <form id="settingsForm">
+                <div style="margin-bottom: 2rem;">
+                    <label style="display: block; margin-bottom: 0.75rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Velocity Limit (KM/H)</label>
+                    <div style="position: relative;">
+                        <input type="number" value="60" style="width: 100%; border: 1px solid var(--glass-border); border-radius: 12px; padding: 1rem; background: rgba(0,0,0,0.3); color: var(--primary); font-family: 'Outfit'; font-size: 1.25rem; font-weight: 700; outline: none; transition: 0.3s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--glass-border)'">
+                        <i class="fa-solid fa-gauge-simple-high" style="position: absolute; right: 1.5rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 2rem;">
+                    <label style="display: block; margin-bottom: 0.75rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Inference Certainty (Min %)</label>
+                    <input type="range" min="1" max="100" value="75" style="width: 100%; height: 6px; border-radius: 5px; background: rgba(255,255,255,0.1); outline: none; transition: 0.3s; cursor: pointer; accent-color: var(--primary);">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem; font-family: 'Outfit';">
+                        <span>Experimental (1%)</span><span>75% Optimal</span><span>Maximum (100%)</span>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 2.5rem; background: rgba(255, 255, 255, 0.02); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--glass-border);">
+                    <label style="display: flex; align-items: center; gap: 1rem; cursor: pointer;">
+                        <div style="position: relative; width: 50px; height: 26px;">
+                            <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;" id="helmetToggle">
+                            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--primary); transition: .4s; border-radius: 34px;"></span>
+                            <span style="position: absolute; content: ''; height: 18px; width: 18px; left: 4px; bottom: 4px; background: #000; transition: .4s; border-radius: 50%;" id="helmetSlider"></span>
+                        </div>
+                        <div>
+                            <span style="color: #fff; font-weight: 700; font-family: 'Outfit'; display: block;">Strict Integrity Check</span>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Enforce mandatory helmet verification on all two-wheelers.</span>
+                        </div>
+                    </label>
+                </div>
+
+                <button type="button" class="btn btn-primary" style="width: 100%; padding: 1.25rem; font-size: 1rem; letter-spacing: 1px;" onclick="alert('Configuration updated and synced across grid nodes.')">SYNCHRONIZE SETTINGS</button>
+            </form>
+        </div>
+
+        <!-- Notification Grid -->
+        <div class="card" style="padding: 2.5rem;">
+            <h3 style="font-family:'Outfit'; margin-bottom: 2rem; border-left: 3px solid var(--accent); padding-left: 1rem;">Enforcement Protocols</h3>
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border);">
+                    <div>
+                        <div style="color: #fff; font-weight: 700; font-family: 'Outfit'; font-size: 1.1rem;">Digital Archive Registry (Email)</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Daily automated logs dispatched to command center.</div>
+                    </div>
+                    <div style="position: relative; width: 50px; height: 26px; flex-shrink: 0;">
+                        <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
+                        <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--accent); transition: .4s; border-radius: 34px;"></span>
+                        <span style="position: absolute; content: ''; height: 18px; width: 18px; left: 28px; bottom: 4px; background: #000; transition: .4s; border-radius: 50%;"></span>
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border);">
+                    <div>
+                        <div style="color: #fff; font-weight: 700; font-family: 'Outfit'; font-size: 1.1rem;">Real-time Intercept Alerts (SMS)</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Instant notification to suspects upon anomaly detection.</div>
+                    </div>
+                    <div style="position: relative; width: 50px; height: 26px; flex-shrink: 0;">
+                        <input type="checkbox" style="opacity: 0; width: 0; height: 0;">
+                        <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.05); transition: .4s; border-radius: 34px; border: 1px solid var(--glass-border);"></span>
+                        <span style="position: absolute; content: ''; height: 18px; width: 18px; left: 4px; bottom: 4px; background: #64748b; transition: .4s; border-radius: 50%;"></span>
+                    </div>
+                </div>
+
+                <div style="background: rgba(139, 92, 246, 0.05); padding: 1.5rem; border-radius: 16px; border: 1px dashed var(--accent); margin-top: 1rem;">
+                    <h4 style="color: var(--accent); font-family: 'Outfit'; margin-bottom: 0.5rem; font-size: 0.9rem;">ADAPTIVE LEARNING</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">The S.I.N Engine automatically adjusts detection matrices based on local grid density and temporal variations.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* CSS animations for custom switches in settings */
+#helmetToggle:checked + span { background-color: var(--primary); }
+#helmetToggle:checked ~ #helmetSlider { transform: translateX(20px); }
+</style>
+{% endblock %}

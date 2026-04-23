@@ -1,25 +1,33 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="animate-fade" style="padding: 2rem;">
-    <header class="header-section" style="margin-bottom: 2rem;">
+<div class="animate-fade">
+    <header class="header-section">
         <div>
-            <h1 class="page-title">Identity Lookup System</h1>
-            <p style="color: var(--text-muted); font-size: 1.1rem;">Search national registry to dispatch explicit alerts.</p>
+            <h1 class="page-title">Identity Registry Query</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">Search national data nodes to establish unit identification and dispatch protocols.</p>
+        </div>
+        <div style="text-align: right;">
+            <div class="status-badge" style="background: rgba(0, 242, 255, 0.1); color: var(--primary); border: 1px solid var(--primary-glow);">
+                <i class="fa-solid fa-satellite-dish" style="margin-right: 0.5rem;"></i> Linked to Central Grid
+            </div>
         </div>
     </header>
 
-    <div class="card" style="padding: 0; overflow: hidden; max-width: 800px; margin: 0 auto;">
-        <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.01);">
+    <div class="card" style="padding: 0; overflow: hidden; max-width: 900px; margin: 2rem auto; border: 1px solid var(--glass-border);">
+        <div style="padding: 1.5rem 2.5rem; border-bottom: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.01);">
             <div style="display: flex; gap: 1rem;">
-                <input type="text" id="plateInput" placeholder="Enter Registration Number (e.g. AP39CD5678)" style="flex: 1; padding: 1rem 1.5rem; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-size: 1.1rem; text-transform: uppercase;">
-                <button class="btn btn-primary" onclick="lookupPlate()" style="padding: 0 2rem; font-size: 1.1rem; border-radius: 12px;">
-                    <i class="fa-solid fa-magnifying-glass"></i> Search
+                <div style="position: relative; flex: 1;">
+                    <i class="fa-solid fa-barcode" style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                    <input type="text" id="plateInput" placeholder="ENTER REGISTRATION ID (E.G. AP39CD5678)" style="width: 100%; padding: 1.25rem 1.5rem 1.25rem 3.5rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 16px; color: #fff; font-size: 1.25rem; font-family: 'Outfit'; font-weight: 700; text-transform: uppercase; outline: none; transition: 0.3s;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 15px var(--primary-glow)';" onblur="this.style.borderColor='var(--glass-border)'; this.style.boxShadow='none';">
+                </div>
+                <button class="btn btn-primary" onclick="lookupPlate()" style="padding: 0 2.5rem; font-size: 1.1rem; border-radius: 16px; font-family: 'Outfit'; font-weight: 800;">
+                   <i class="fa-solid fa-search"></i> EXECUTE
                 </button>
             </div>
         </div>
 
-        <div id="resultsPane" style="padding: 2rem; display: none;">
+        <div id="resultsPane" style="padding: 2.5rem; display: none; background: rgba(0,0,0,0.1);">
             <!-- Rendered by JS -->
         </div>
     </div>
@@ -32,71 +40,74 @@
         
         const pane = document.getElementById('resultsPane');
         pane.style.display = 'block';
-        pane.innerHTML = `<div style="text-align: center; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><p>Querying Registry Database...</p></div>`;
+        pane.innerHTML = `<div style="text-align: center; padding: 4rem; color: var(--text-muted);"><i class="fa-solid fa-atom fa-spin fa-3x" style="margin-bottom: 1rem; color: var(--primary);"></i><p style="font-family: 'Outfit'; font-weight: 700; letter-spacing: 2px;">SYNCHRONIZING WITH CENTRAL GRID...</p></div>`;
 
         try {
             const response = await fetch('/api/lookup?plate=' + encodeURIComponent(plate));
             const data = await response.json();
 
             if (data.found) {
-                // Formatting results pane
                 pane.innerHTML = `
-                    <div style="background: rgba(var(--primary-rgb), 0.05); border: 1px solid var(--primary-glow); border-radius: 12px; padding: 1.5rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem;">
+                    <div class="animate-fade" style="background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2.5rem; position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: var(--primary); filter: blur(80px); opacity: 0.1;"></div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
                             <div>
-                                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em;">Target Identified</div>
-                                <h3 style="margin: 0; color: var(--primary); font-size: 1.5rem;">${data.name}</h3>
+                                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.2em; font-weight: 800; margin-bottom: 0.5rem;">Subject Identified</div>
+                                <h3 style="margin: 0; color: #fff; font-size: 2.5rem; font-family: 'Outfit'; font-weight: 900;">${data.name}</h3>
                             </div>
-                            <div class="status-badge badge-success">Verified</div>
+                            <div class="status-badge badge-success" style="padding: 0.5rem 1rem; font-size: 0.85rem; letter-spacing: 1px;"><i class="fa-solid fa-check-double"></i> VERIFIED</div>
                         </div>
                         
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                            <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; border: 1px solid var(--glass-border);">
-                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.25rem;">Phone Number</div>
-                                <div style="font-family: monospace; font-size: 1.1rem;">${data.phone}</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem;">
+                            <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--glass-border);">
+                                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: 1px;">Communication Uplink</div>
+                                <div style="font-family: 'Outfit'; font-size: 1.25rem; font-weight: 700; color: var(--primary);">${data.phone}</div>
                             </div>
-                            <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; border: 1px solid var(--glass-border);">
-                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.25rem;">Email Address</div>
-                                <div>${data.email}</div>
+                            <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--glass-border);">
+                                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: 1px;">Digital Identity</div>
+                                <div style="font-family: 'Outfit'; font-size: 1.25rem; font-weight: 700; color: #fff;">${data.email}</div>
                             </div>
                         </div>
 
-                        <div style="border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
-                            <h4 style="margin: 0 0 1rem 0; color: var(--text-muted);">Dispatch Manual Alert</h4>
+                        <div style="border-top: 1px solid var(--glass-border); padding-top: 2rem; background: rgba(139, 92, 246, 0.03); margin: 0 -2.5rem -2.5rem -2.5rem; padding: 2rem 2.5rem;">
+                            <h4 style="margin: 0 0 1.5rem 0; color: #fff; font-family: 'Outfit'; font-weight: 700; display: flex; align-items: center; gap: 0.75rem;">
+                                <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);"></i> Manual Intervention Protocol
+                            </h4>
                             
-                            <select id="manualViolation" class="btn" style="width: 100%; margin-bottom: 1rem; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white;">
+                            <select id="manualViolation" class="btn" style="width: 100%; margin-bottom: 1.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: white; padding: 1rem; border-radius: 12px; outline: none; font-family: 'Outfit';">
                                 <option value="Overspeeding">Overspeeding (Exceeded limit by >15km/h)</option>
                                 <option value="No Helmet">No Helmet Tracking</option>
                                 <option value="Red Light">Red Light Violation</option>
                                 <option value="No Parking">Illegal Parking Zone</option>
                             </select>
 
-                            <button class="btn" onclick="sendAlert('${plate}')" style="width: 100%; background: var(--danger); border-color: transparent;">
-                                <i class="fa-solid fa-triangle-exclamation"></i> Send Alert (SMS & Email)
+                            <button class="btn" onclick="sendAlert('${plate}')" style="width: 100%; background: var(--danger); border-color: transparent; padding: 1.25rem; font-family: 'Outfit'; font-weight: 900; letter-spacing: 1px; color: #fff;">
+                                <i class="fa-solid fa-paper-plane"></i> DISPATCH ENFORCEMENT ALERT
                             </button>
                         </div>
                     </div>
                 `;
             } else {
                 pane.innerHTML = `
-                    <div style="text-align: center; padding: 2rem 0; color: var(--text-muted);">
-                        <i class="fa-solid fa-ghost fa-3x" style="margin-bottom: 1rem; opacity: 0.3;"></i>
-                        <h4>Target Not Found in Registry</h4>
-                        <p>No verified identity matches registration ${plate}.</p>
+                    <div style="text-align: center; padding: 4rem 0; color: var(--text-muted);" class="animate-fade">
+                        <i class="fa-solid fa-user-slash fa-4x" style="margin-bottom: 1.5rem; opacity: 0.2;"></i>
+                        <h4 style="font-family: 'Outfit'; font-weight: 700; color: #fff; font-size: 1.5rem;">TARGET DATA NULL</h4>
+                        <p style="margin-top: 0.5rem;">No verified identity correlates with registration index ${plate}.</p>
                     </div>
                 `;
             }
 
         } catch (e) {
-            pane.innerHTML = `<div style="color: var(--danger);">Network connectivity error. Retry query.</div>`;
+            pane.innerHTML = `<div style="text-align: center; color: var(--danger); font-family: 'Outfit'; font-weight: 700;">GRID CONNECTIVITY SEVERED. RETRY PROTOCOL.</div>`;
         }
     }
 
     async function sendAlert(plate) {
         const vType = document.getElementById('manualViolation').value;
         const btn = event.currentTarget;
-        const originalText = btn.innerHTML;
-        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Dispatching...`;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> UPLINKING...`;
         btn.style.opacity = '0.7';
 
         try {
@@ -108,20 +119,22 @@
             const result = await response.json();
             
             if (result.success) {
-                btn.innerHTML = `<i class="fa-solid fa-check"></i> Dispatched!`;
+                btn.innerHTML = `<i class="fa-solid fa-check"></i> DISPATCH SUCCESS`;
                 btn.style.background = 'var(--success)';
-                btn.style.color = 'black';
+                btn.style.color = '#000';
                 setTimeout(() => {
-                    btn.innerHTML = originalText;
+                    btn.innerHTML = originalHTML;
                     btn.style.background = 'var(--danger)';
-                    btn.style.color = 'white';
+                    btn.style.color = '#fff';
                     btn.style.opacity = '1';
                 }, 3000);
             }
         } catch {
-            alert("Dispatch failed. Check logs.");
-            btn.innerHTML = originalText;
-            btn.style.opacity = '1';
+            btn.innerHTML = `CONNECTION ERROR`;
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.style.opacity = '1';
+            }, 3000);
         }
     }
 </script>

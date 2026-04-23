@@ -1,121 +1,312 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>S.I.N | Authentication Gateway</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        .login-wrapper {
-            height: 100vh;
+        :root {
+            --primary: #00f2ff;
+            --primary-glow: rgba(0, 242, 255, 0.5);
+            --bg-dark: #02040a;
+            --accent: #8b5cf6;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            z-index: 10;
+            height: 100vh;
+        }
+
+        /* Cyber Grid Background */
+        .background-grid {
+            position: fixed;
+            top: 0; left: 0; width: 200%; height: 200%;
+            background-image: 
+                linear-gradient(rgba(0, 242, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg) translateY(-20%);
+            animation: grid-move 20s linear infinite;
+            z-index: -2;
+        }
+
+        @keyframes grid-move {
+            from { transform: perspective(500px) rotateX(60deg) translateY(-20%); }
+            to { transform: perspective(500px) rotateX(60deg) translateY(0%); }
+        }
+
+        /* Scanline Effect */
+        .scanline {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.1) 51%, transparent 51%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0.15;
+        }
+
+        .scanline-move {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(0, 242, 255, 0.2);
+            box-shadow: 0 0 10px var(--primary);
+            animation: scanline-anim 8s linear infinite;
+            z-index: 101;
+        }
+
+        @keyframes scanline-anim {
+            0% { top: -10%; }
+            100% { top: 110%; }
         }
 
         .login-card {
             width: 100%;
-            max-width: 480px;
-            padding: 4rem 3rem;
+            max-width: 420px;
+            padding: 3.5rem;
+            background: rgba(10, 15, 30, 0.8);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            border-radius: 24px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 242, 255, 0.1);
             position: relative;
+            z-index: 10;
             overflow: hidden;
         }
 
         .login-card::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(from 0deg, transparent, var(--primary), transparent, var(--accent), transparent);
-            animation: rotate 10s linear infinite;
-            opacity: 0.1;
-            z-index: -1;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
         }
 
         .auth-logo {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo-text {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 3.5rem;
+            letter-spacing: -2px;
+            color: #fff;
+            text-shadow: 0 0 15px var(--primary-glow);
+            margin: 0;
+        }
+
+        .logo-sub {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: var(--primary);
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            margin-top: 0.5rem;
         }
 
         .auth-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-main);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.25rem;
+            color: #fff;
             margin-bottom: 0.5rem;
             text-align: center;
+            letter-spacing: 1px;
         }
 
         .auth-subtitle {
-            color: var(--text-muted);
-            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
             text-align: center;
             margin-bottom: 2.5rem;
         }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            color: #fff;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            transition: 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .btn-authorize {
+            width: 100%;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            padding: 1.25rem;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .btn-authorize:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px var(--primary-glow);
+            filter: brightness(1.2);
+        }
+
+        .btn-authorize:active {
+            transform: scale(0.98);
+        }
+
+        .footer-links {
+            margin-top: 2.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .footer-links span {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            margin-left: 0.5rem;
+            transition: 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #fff;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Alerts */
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid #ef4444;
+            color: #fca5a5;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Biometric Loading Hint */
+        .biometric-scanner {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0.3;
+        }
+
+        .fingerprint-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0.3; transform: scale(1); }
+        }
     </style>
 </head>
-
 <body>
-    <div class="login-wrapper">
-        <div class="card login-card animate-fade">
-            <div class="auth-logo">
-                <div class="logo-text" style="font-size: 3.5rem;">S.I.N</div>
-                <div style="font-size: 0.8rem; color: var(--primary); font-weight: 700; letter-spacing: 0.2em; margin-top: -0.5rem;">SMART INTERCEPT</div>
+    <div class="background-grid"></div>
+    <div class="scanline"></div>
+    <div class="scanline-move"></div>
+
+    <div class="login-card animate-fade">
+        <div class="auth-logo">
+            <h1 class="logo-text">S.I.N</h1>
+            <p class="logo-sub">Smart Intercept Network</p>
+        </div>
+        
+        <h2 class="auth-title">ACCESS TERMINAL</h2>
+        <p class="auth-subtitle">Encrypted biometric uplink required.</p>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert-error">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label class="form-label">Personnel ID</label>
+                <input type="text" name="username" class="form-input" required placeholder="IDENTIFIER" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Access Passphrase</label>
+                <input type="password" name="password" class="form-input" required placeholder="••••••••">
             </div>
             
-            <h2 class="auth-title">Authentication Gateway</h2>
-            <p class="auth-subtitle">Personnel access only. Biometric sync active.</p>
+            <button type="submit" class="btn-authorize">
+                INITIALIZE UPLINK <i class="fa-solid fa-bolt"></i>
+            </button>
+        </form>
 
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            {% for message in messages %}
-            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: var(--danger); padding: 0.75rem; border-radius: 12px; font-size: 0.85rem; text-align: center; margin-bottom: 1.5rem;">
-                <i class="fa-solid fa-triangle-exclamation" style="margin-right: 0.5rem;"></i>
-                {{ message }}
-            </div>
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
-
-            <form action="/login" method="POST">
-                <div class="form-group">
-                    <label><i class="fa-solid fa-id-badge" style="margin-right: 0.5rem;"></i> Badge Identifier</label>
-                    <input type="text" name="username" class="form-control" required placeholder="Enter identifier">
-                </div>
-                <div class="form-group">
-                    <label><i class="fa-solid fa-key" style="margin-right: 0.5rem;"></i> Secure Passphrase</label>
-                    <input type="password" name="password" class="form-control" required placeholder="••••••••">
-                </div>
-                
-                <div style="margin-top: 2rem;">
-                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1.125rem;">
-                        <i class="fa-solid fa-unlock-keyhole"></i>
-                        Decrypt & Access
-                    </button>
-                </div>
-            </form>
-
-            <div style="margin-top: 2.5rem; text-align: center; font-size: 0.9rem;">
-                <span style="color: var(--text-muted);">New personnel?</span>
-                <a href="/signup" style="color: var(--primary); text-decoration: none; font-weight: 600; margin-left: 0.5rem;">Initialize Account</a>
-            </div>
-
-            <div style="margin-top: 1.5rem; text-align: center; font-size: 0.75rem; color: var(--text-muted);">
-                <i class="fa-solid fa-lock" style="margin-right: 0.4rem;"></i>
-                256-bit GRID Encryption Active
-            </div>
+        <div class="footer-links">
+            <span>New Operator?</span>
+            <a href="/signup">CREATE PROTOCOL</a>
         </div>
     </div>
-</body>
 
-</html>
+    <div class="biometric-scanner">
+        <i class="fa-solid fa-fingerprint fingerprint-icon"></i>
+        <span style="font-size: 0.6rem; letter-spacing: 1px; color: var(--primary);">SYNC ACTIVE</span>
+    </div>
+</body>
+</html>

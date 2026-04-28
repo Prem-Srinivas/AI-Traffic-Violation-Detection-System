@@ -1,86 +1,83 @@
 🚦 AI Traffic Violation Detection System
 📌 Overview
 
-The AI Traffic Violation Detection System is a computer vision-based project designed to automatically detect and monitor traffic violations using deep learning models.
+The AI Traffic Violation Detection System is a real-time computer vision project that automatically detects traffic rule violations using deep learning.
 
-The system processes video input (CCTV/live feed) and identifies violations such as:
+This system analyzes video streams from CCTV cameras or recorded footage and identifies violations such as:
 
-🚫 Riding without helmet
-👨‍👨‍👦 Triple riding
-⚡ Over-speeding
-🚧 Wrong direction
-🚗 Vehicle detection & tracking
+🪖 No Helmet Detection
+👨‍👨‍👦 Triple Riding
+🚗 Vehicle Detection
+⚡ Over-speeding (optional)
+🚧 Wrong Direction (optional)
 
-This helps reduce manual monitoring and improves road safety using automation.
-
-Modern systems like this typically rely on YOLO-based object detection and real-time video analysis for accurate results.
+The goal is to reduce manual monitoring and improve road safety using AI automation.
 
 🎯 Features
-🎥 Real-time traffic monitoring
-🧠 Deep learning-based object detection (YOLO)
-🏍️ Helmet & rider detection
+🎥 Real-time video processing
+🧠 AI-based object detection using YOLO
+🏍️ Helmet and rider detection
 🚗 Vehicle detection and tracking
-🪪 License Plate Recognition (optional)
 ⚠️ Automatic violation detection
-📊 Logs and analytics
+💾 Save violation images/videos
+📊 Logs for analysis
 🛠️ Technologies Used
-Programming Language: Python
+Language: Python
 Libraries: OpenCV, NumPy
-Deep Learning: YOLOv5 / YOLOv8
-Frameworks: TensorFlow / PyTorch
-Database (Optional): MySQL / SQLite
-Tools: VS Code, Jupyter Notebook
+Deep Learning Models: YOLOv5 / YOLOv8
+Frameworks: PyTorch / TensorFlow
+IDE: VS Code
 🧠 System Architecture
-Video Input (Camera / CCTV)
+Video Input (CCTV / Camera / Video file)
 Frame Extraction
 Object Detection (YOLO Model)
-Object Tracking
+Rider & Helmet Classification
 Violation Detection Logic
-Result Display & Storage
-
-Typical systems follow modular pipelines including detection, tracking, and violation logic stages.
-
+Output Display & Storage
 ⚙️ Installation
 1️⃣ Clone the Repository
 git clone https://github.com/Prem-Srinivas/AI-Traffic-Violation-Detection-System.git
 cd AI-Traffic-Violation-Detection-System
 2️⃣ Create Virtual Environment
 python -m venv venv
-venv\Scripts\activate   # Windows
+venv\Scripts\activate   # For Windows
 3️⃣ Install Dependencies
 pip install -r requirements.txt
 ▶️ Usage
 python main.py
+
+👉 Steps:
+
+Run the script
 Provide input video or camera
-System starts detecting violations automatically
+System will detect and display violations in real-time
 📂 Project Structure
 AI-Traffic-Violation-Detection-System/
 │
 ├── models/              # Trained models
 ├── dataset/             # Training data
-├── outputs/             # Results & logs
+├── outputs/             # Detected results
 ├── utils/               # Helper functions
-├── main.py              # Main file
+├── main.py              # Main execution file
 ├── detect.py            # Detection logic
 ├── requirements.txt     # Dependencies
 └── README.md            # Documentation
 📸 Output
-Bounding boxes on detected vehicles
+Bounding boxes on vehicles and riders
 Highlighted violations
-Captured frames/images
-Logs of violations
+Saved images of detected violations
+Real-time video output
 🔒 Future Enhancements
 📱 Mobile App Integration
-☁️ Cloud-based Monitoring
-🚓 Integration with Traffic Police System
-📡 Smart Traffic Signal Integration
-📊 Dashboard with Analytics
+☁️ Cloud Deployment
+🚓 Integration with Traffic Police Systems
+🪪 Automatic License Plate Recognition (ALPR)
+📊 Dashboard with analytics
 👨‍💻 Author
 
 Prem Srinivas
+B.Tech Student | AI & Full Stack Developer
 
-B.Tech Student
-AI & Full Stack Developer
 📜 License
 
-This project is for academic and research purposes only.
+This project is developed for academic and learning purposes.
